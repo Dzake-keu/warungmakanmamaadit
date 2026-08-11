@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Katalog Toko</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background-color: #fafafa; padding-bottom: 250px; }
+    header { background-color: #ffffff; color: #333; text-align: center; padding: 15px 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
+    
+    #storeStatus { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; font-weight: bold; }
+    .open { background: #d4edda; color: #155724; }
+    .po-mode { background: #fff3cd; color: #856404; }
+
+    /* Catatan Menu Berganti */
+    .menu-note { font-size: 0.7rem; color: #666; font-weight: normal; margin-top: 6px; font-style: italic; }
+
+    /* Tombol Kontak WhatsApp Melayang (Atas Kanan) */
+    .contact-btn { position: fixed; top: 15px; right: 15px; z-index: 101; background-color: #25D366; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); text-decoration: none; }
+
+    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; max-width: 600px; margin: 0 auto; }
+    .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; transition: opacity 0.3s; }
+    .product-info { padding: 12px; }
+    .product-title { font-size: 0.85rem; margin-bottom: 6px; height: 38px; overflow: hidden; color: #444; }
+    .product-price { color: #111; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; }
+    .quantity-control { display: flex; align-items: center; border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: #fff; }
+    .qty-btn { background: #fff; border: none; width: 35px; height: 32px; cursor: pointer; color: #555; }
+    .qty-btn:disabled { background: #eee; color: #ccc; cursor: not-allowed; }
+    .qty-number { font-size: 0.85rem; font-weight: bold; padding: 0 10px; color: #222; }
+
+    /* Footer Checkout */
+    .checkout-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; max-width: 600px; margin: 0 auto; border-top: 1px solid #eee; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 200; max-height: 80vh; overflow-y: auto; }
+    .checkout-header { display: flex; justify-content: space-between; align-items: center; }
+    .total-price { font-weight: bold; color: #111; font-size: 1.2rem; }
+    .toggle-btn { background: #eee; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+    
+    /* Form Tersembunyi */
+    #formFields { display: none; margin-top: 15px; }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 0.75rem; color: #666; margin-bottom: 4px; font-weight: bold; }
+    .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; font-size: 0.9rem; background: #fcfcfc; }
+    
+    /* Ringkasan Pesanan */
+    .summary-box { background: #f8f9fa; border: 1px dashed #ddd; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 0.85rem; }
+    .summary-title { font-weight: bold; margin-bottom: 5px; color: #333; display: flex; justify-content: space-between; align-items: center; }
+    .summary-list { list-style: none; padding: 0; color: #555; }
+    .summary-list li { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    
+    /* Tombol Reset & Kirim */
+    .btn-group { display: flex; gap: 8px; }
+    .btn-reset { background-color: #dc3545; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 35%; }
+    .btn-wa { background-color: #000; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 65%; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+  <!-- Tombol Kontak Bantuan WA -->
+  <a href="#" class="contact-btn" onclick="openContactWA()">💬 Tanya Kami</a>
+
+  <header>
+    Menu <br>
+    <div id="storeStatus">Mengecek Status...</div>
+    <div class="menu-note">📌 Variasi menu & isian wadai dapat berganti setiap hari</div>
+  </header>
+
+  <div class="product-grid" id="productGrid"></div>
+
+  <div class="checkout-bar" id="checkoutBar">
+    <div class="checkout-header">
+      <div>Total: <span class="total-price" id="totalPrice">Rp 0</span></div>
+      <button class="toggle-btn" id="toggleBtn" onclick="toggleForm()">^</button>
+    </div>
+    
+    <div id="formFields">
+      <!-- Ringkasan Pesanan -->
+      <div class="summary-box">
+        <div class="summary-title">Ringkasan Pesanan</div>
+        <ul class="summary-list" id="summaryList">
+          <li style="font-style: italic; color: #888;">Belum ada item dipilih</li>
+        </ul>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="customerName" placeholder="Nama Pemesan">
+      </div>
+      <div class="input-group">
+        <input type="tel" id="customerPhone" placeholder="No. WhatsApp / HP">
+      </div>
+
+      <div class="input-group">
+        <select id="orderType" onchange="toggleAddress()">
+          <option value="Delivery (Kirim ke Alamat)">Delivery</option>
+          <option value="Takeaway (Bawa Pulang)">Takeaway</option>
+        </select>
+      </div>
+      <div class="input-group" id="addressContainer">
+        <input type="text" id="address" placeholder="Alamat Pengiriman">
+      </div>
+      <div class="input-group">
+        <select id="paymentMethod">
+          <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat)</option>
+          <option value="Transfer Bank">Transfer Bank</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <textarea id="notes" placeholder="Catatan Tambahan (Opsional)" style="height: 45px;"></textarea>
+      </div>
+      
+      <!-- Tombol Reset & Pesan -->
+      <div class="btn-group">
+        <button class="btn-reset" id="resetBtn" onclick="resetCart()">Reset</button>
+        <button class="btn-wa" id="orderBtn" onclick="sendToWA()">Pesan Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const NO_WA = "6281234567890"; // Ganti dengan nomor WhatsApp Toko
+    let isPO = false;
+
+    // Daftar Produk dengan Direct Link Gambar
+    const products = [
+      { id: 1, name: "Nasi Kuning Ayam", price: 15000, status: "ready", image: "https://i.postimg.cc/SjMzXG47/nasi-ayam.jpg" },
+      { id: 2, name: "Nasi Kuning Telur", price: 15000, status: "ready", image: "https://i.postimg.cc/n9jKM8k0/nasi-telur.jpg" },
+      { id: 3, name: "Nasi Kuning Patin", price: 15000, status: "empty", image: "https://i.postimg.cc/5H2C6d9K/nasi-patin.jpg" },
+      
+      { id: 4, name: "Wadai Untuk (Isi Kelapa)", price: 3000, status: "ready", image: "https://i.postimg.cc/G9ysBjRF/untuk-kelapa.jpg" },
+      { id: 5, name: "Wadai Untuk (Isi Kacang)", price: 3000, status: "empty", image: "https://i.postimg.cc/rzrtd9TJ/untuk-kacang.jpg" },
+      
+      { id: 6, name: "Wadai Donat Pelangi", price: 3000, status: "ready", image: "https://i.postimg.cc/grZ6wKpg/donat-pelangi.jpg" },
+      { id: 7, name: "Wadai Donat Gula", price: 3000, status: "ready", image: "https://i.postimg.cc/vDV61vyX/donat-gula.jpg" },
+      { id: 8, name: "Wadai Donat Coklat", price: 3000, status: "ready", image: "https://i.postimg.cc/RqHn3TmT/donat-coklat.jpg" },
+      { id: 9, name: "Wadai Bingka Hijau", price: 3000, status: "empty", image: "https://i.postimg.cc/s1hZBJz8/bingka-hijau.jpg" },
+      { id: 10, name: "Wadai Bingka Pisang", price: 3000, status: "ready", image: "https://i.postimg.cc/5jCFHmJr/bingka-pisang.jpg" },
+      { id: 11, name: "Wadai Jawau", price: 3000, status: "empty", image: "https://i.postimg.cc/XXCyZgWT/jawau.jpg" },
+      { id: 12, name: "Wadai Gagatas", price: 3000, status: "empty", image: "https://i.postimg.cc/23ZBqxmp/gagatas.jpg" }
+    ];
+
+    const cart = {}; 
+    products.forEach(p => cart[p.id] = 0);
+
+    function toggleForm() {
+      const form = document.getElementById('formFields');
+      const btn = document.getElementById('toggleBtn');
+      if (form.style.display === 'block') {
+        form.style.display = 'none';
+        btn.innerText = "^";
+      } else {
+        form.style.display = 'block';
+        btn.innerText = "v";
+      }
+    }
+
+    function openContactWA() {
+      const msg = encodeURIComponent("Halo, saya mau nanya tentang menu/pesanan");
+      window.open(`https://wa.me/${NO_WA}?text=${msg}`, '_blank');
+    }
+
+    function checkStoreStatus() {
+      const now = new Date();
+      const currentTime = now.getHours() + (now.getMinutes() / 60);
+      
+      const statusDiv = document.getElementById('storeStatus');
+      const orderBtn = document.getElementById('orderBtn');
+
+      const isTimeOpen = currentTime >= 4 && currentTime < 7.5;
+
+      if (isTimeOpen) {
+        isPO = false;
+        statusDiv.innerText = "Toko Buka (Siap Kirim Pagi Ini)"; 
+        statusDiv.className = "open";
+        orderBtn.innerText = "Pesan Sekarang";
+      } else {
+        isPO = true;
+        statusDiv.innerText = "Pre-Order (Buka untuk Besok)"; 
+        statusDiv.className = "po-mode";
+        orderBtn.innerText = "Kirim Pesanan PO";
+      }
+    }
+
+    function toggleAddress() { 
+      document.getElementById('addressContainer').style.display = document.getElementById('orderType').value.includes("Delivery") ? 'block' : 'none'; 
+    }
+
+    function updateQty(id, delta) { 
+      if (cart[id] + delta >= 0) { 
+        cart[id] += delta; 
+        document.getElementById(`qty-${id}`).innerText = cart[id]; 
+        calculateTotal(); 
+        updateSummary();
+      } 
+    }
+
+    function calculateTotal() { 
+      let total = 0; 
+      let totalWadaiQty = 0;
+
+      products.forEach(p => {
+        if (p.price === 3000) {
+          totalWadaiQty += cart[p.id];
+        } else {
+          total += cart[p.id] * p.price;
+        }
+      }); 
+
+      if (totalWadaiQty > 0) {
+        total += Math.floor(totalWadaiQty / 2) * 5000 + (totalWadaiQty % 2) * 3000;
+      }
+
+      document.getElementById('totalPrice').innerText = 'Rp ' + total.toLocaleString(); 
+    }
+
+    function updateSummary() {
+      const summaryList = document.getElementById('summaryList');
+      let itemsHTML = '';
+      let hasItems = false;
+
+      products.forEach(p => {
+        if (cart[p.id] > 0) {
+          hasItems = true;
+          itemsHTML += `<li><span>${p.name} (x${cart[p.id]})</span></li>`;
+        }
+      });
+
+      if (hasItems) {
+        summaryList.innerHTML = itemsHTML;
+      } else {
+        summaryList.innerHTML = '<li style="font-style: italic; color: #888;">Belum ada item dipilih</li>';
+      }
+    }
+
+    function resetCart() {
+      products.forEach(p => {
+        cart[p.id] = 0;
+        const qtyElement = document.getElementById(`qty-${p.id}`);
+        if (qtyElement) qtyElement.innerText = "0";
+      });
+      calculateTotal();
+      updateSummary();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = products.map(p => {
+        const isReady = p.status === "ready";
+        return `
+          <div class="product-card" style="${!isReady ? 'opacity:0.55;' : ''}">
+            <img src="${p.image}" alt="${p.name}" style="width:100%; aspect-ratio:1/1; object-fit:cover; display:block;">
+            <div class="product-info">
+              <div class="product-title">
+                ${p.name} ${!isReady ? '<br><span style="color:#d9534f; font-size:0.7rem; font-weight:bold;">(Libur / Habis)</span>' : ''}
+              </div>
+              <div class="product-price">Rp ${p.price.toLocaleString()}</div>
+              <div class="quantity-control">
+                <button class="qty-btn" onclick="updateQty(${p.id}, -1)" ${!isReady ? 'disabled' : ''}>-</button>
+                <span class="qty-number" id="qty-${p.id}">${cart[p.id]}</span>
+                <button class="qty-btn" onclick="updateQty(${p.id}, 1)" ${!isReady ? 'disabled' : ''}>+</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function sendToWA() {
+      const name = document.getElementById('customerName').value;
+      const phone = document.getElementById('customerPhone').value;
+      const type = document.getElementById('orderType').value;
+      const address = document.getElementById('address').value;
+      const payment = document.getElementById('paymentMethod').value;
+      const notes = document.getElementById('notes').value;
+
+      if (!name) { alert("Tolong isi Nama Pemesan!"); return; }
+      if (!phone) { alert("Tolong isi Nomor WA/HP Pemesan!"); return; }
+      if (type.includes("Delivery") && !address) { alert("Tolong isi Alamat Pengiriman!"); return; }
+      
+      let orderList = [];
+      let summaryText = "";
+      let totalWadaiQty = 0;
+      let total = 0;
+
+      products.forEach(p => {
+        if (cart[p.id] > 0) {
+          orderList.push(`- ${p.name} (${cart[p.id]}x)`);
+          summaryText += `• ${p.name} (${cart[p.id]}x)\n`;
+          if (p.price === 3000) {
+            totalWadaiQty += cart[p.id];
+          } else {
+            total += cart[p.id] * p.price;
+          }
+        }
+      });
+
+      if (orderList.length === 0) { alert("Pilih menu dulu!"); return; }
+
+      if (totalWadaiQty > 0) {
+        total += Math.floor(totalWadaiQty / 2) * 5000 + (totalWadaiQty % 2) * 3000;
+      }
+
+      const confirmMsg = `Apakah pesanan Anda sudah benar?\n\n` +
+                         `Rincian Pesanan:\n${summaryText}\n` +
+                         `Total Bayar: Rp ${total.toLocaleString()}\n\n` +
+                         `Klik OK untuk melanjutkan ke WhatsApp.`;
+
+      const isConfirmed = confirm(confirmMsg);
+
+      if (!isConfirmed) {
+        return; 
+      }
+
+      let headerText = isPO ? "*[PESANAN PRE-ORDER (PO)]*\n\n" : "*[PESANAN LANGSUNG]*\n\n";
+
+      let message = `${headerText}Halo, saya ingin memesan:\n\n*Nama:* ${name}\n*No. HP:* ${phone}\n*Tipe:* ${type}\n*Pembayaran:* ${payment}\n`;
+      if(type.includes("Delivery")) message += `*Alamat:* ${address}\n`;
+      if (notes) message += `*Catatan:* ${notes}\n`;
+      
+      message += `\n*Menu:*\n${orderList.join('\n')}\n\n*Total Bayar: Rp ${total.toLocaleString()}*\n\nMohon diproses ya, terima kasih!`;
+
+      window.open(`https://wa.me/${6282199443463}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    renderProducts(); 
+    toggleAddress(); 
+    checkStoreStatus();
+  </script>
+</body>
+</html>
