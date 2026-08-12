@@ -6,8 +6,9 @@
   <title>Katalog Toko</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background-color: #fafafa; padding-bottom: 250px; }
-    header { background-color: #ffffff; color: #333; text-align: center; padding: 15px 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
+    body { background-color: #fff8e7; padding-bottom: 250px; }
+    header { background-color: #ffffff; color: #333; padding: 10px 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: flex-start; gap: 12px; }
+
     
     #storeStatus { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; font-weight: bold; }
     .open { background: #d4edda; color: #155724; }
@@ -58,13 +59,19 @@
   <!-- Tombol Kontak Bantuan WA -->
   <a href="#" class="contact-btn" onclick="openContactWA()">💬 Tanya Kami</a>
 
-  <header>
+<header>
+  <img src="https://i.postimg.cc/XXMNH8VS/1786492989752.png" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">
+  <div>
     Menu <br>
-    <div id="storeStatus">Mengecek Status...</div>
-    <div class="menu-note">📌 Variasi menu & isian wadai dapat berganti setiap hari</div>
-  </header>
+    <div id="storeStatus" class="open">Toko Buka (Siap Kirim Pagi Ini)</div>
 
-  <div class="product-grid" id="productGrid"></div>
+    <div class="menu-note">📌 menu wadai dapat berganti setiap hari</div>
+  ...
+  </div>
+...
+</header>
+
+<div class="product-grid" id="productGrid"></div>
 
   <div class="checkout-bar" id="checkoutBar">
     <div class="checkout-header">
@@ -128,9 +135,9 @@
       { id: 4, name: "Wadai Untuk (Isi Kelapa)", price: 3000, status: "empty", image: "https://i.postimg.cc/G9ysBjRF/untuk-kelapa.jpg" },
       { id: 5, name: "Wadai Untuk (Isi Kacang)", price: 3000, status: "empty", image: "https://i.postimg.cc/rzrtd9TJ/untuk-kacang.jpg" },
       
-      { id: 6, name: "Wadai Donat Pelangi", price: 3000, status: "ready", image: "https://i.postimg.cc/grZ6wKpg/donat-pelangi.jpg" },
-      { id: 7, name: "Wadai Donat Gula", price: 3000, status: "ready", image: "https://i.postimg.cc/vDV61vyX/donat-gula.jpg" },
-      { id: 8, name: "Wadai Donat Coklat", price: 3000, status: "ready", image: "https://i.postimg.cc/RqHn3TmT/donat-coklat.jpg" },
+      { id: 6, name: "Wadai Donat Pelangi", price: 3000, status: "empty", image: "https://i.postimg.cc/grZ6wKpg/donat-pelangi.jpg" },
+      { id: 7, name: "Wadai Donat Gula", price: 3000, status: "empty", image: "https://i.postimg.cc/vDV61vyX/donat-gula.jpg" },
+      { id: 8, name: "Wadai Donat Coklat", price: 3000, status: "empty", image: "https://i.postimg.cc/RqHn3TmT/donat-coklat.jpg" },
       { id: 9, name: "Wadai Bingka Hijau", price: 3000, status: "empty", image: "https://i.postimg.cc/s1hZBJz8/bingka-hijau.jpg" },
       { id: 10, name: "Wadai Bingka Pisang", price: 3000, status: "empty", image: "https://i.postimg.cc/5jCFHmJr/bingka-pisang.jpg" },
       { id: 11, name: "Wadai Jawau", price: 3000, status: "empty", image: "https://i.postimg.cc/XXCyZgWT/jawau.jpg" },
