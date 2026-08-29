@@ -3,400 +3,537 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Katalog Toko</title>
+  <title>Tracker Tabungan</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background-color: #fce1ba; padding-bottom: 250px; }
-    header { background-image: url('https://i.postimg.cc/s2f7ypWj/20260812-100129.jpg'); background-size: cover; background-position: center right; background-repeat: no-repeat; background-color: transparent; color: #333; padding: 20px 15px; position: sticky; top: 0; z-index: 100; border-bottom: none; display: flex; align-items: center; justify-content: flex-start; gap: 12px; }
-
-
-
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+    }
+    h2, h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
     
-    #storeStatus { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-top: 5px; font-weight: bold; }
-    .open { background: #d4edda; color: #155724; }
-    .po-mode { background: #fff3cd; color: #856404; }
+    /* Style khusus untuk Password Wrapper dengan Tombol Mata */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .password-wrapper input {
+      padding-right: 40px; /* Ruang untuk tombol mata */
+    }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: #777;
+      padding: 0;
+      margin: 0;
+      width: auto;
+    }
+    .toggle-password:hover {
+      background: none;
+      color: #2ec4b6;
+    }
 
-    /* Catatan Menu Berganti */
-    .menu-note { font-size: 0.7rem; color: #666; font-weight: normal; margin-top: 6px; font-style: italic; }
-
-    /* Tombol Kontak WhatsApp Melayang (Atas Kanan) */
-    .contact-btn { position: fixed; top: 15px; right: 15px; z-index: 101; background-color: #25D366; color: white; border: none; padding: 8px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); text-decoration: none; }
-
-    .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 15px; max-width: 600px; margin: 0 auto; }
-    .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #f0f0f0; transition: opacity 0.3s; }
-    .product-info { padding: 12px; }
-    .product-title { font-size: 0.85rem; margin-bottom: 6px; height: 38px; overflow: hidden; color: #444; }
-    .product-price { color: #111; font-weight: bold; font-size: 0.95rem; margin-bottom: 10px; }
-    .quantity-control { display: flex; align-items: center; border: 1px solid #eee; border-radius: 8px; overflow: hidden; background: #fff; }
-    .qty-btn { background: #fff; border: none; width: 35px; height: 32px; cursor: pointer; color: #555; }
-    .qty-btn:disabled { background: #eee; color: #ccc; cursor: not-allowed; }
-    .qty-number { font-size: 0.85rem; font-weight: bold; padding: 0 10px; color: #222; }
-
-    /* Footer Checkout */
-    .checkout-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; padding: 15px; max-width: 600px; margin: 0 auto; border-top: 1px solid #eee; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 200; max-height: 80vh; overflow-y: auto; }
-    .checkout-header { display: flex; justify-content: space-between; align-items: center; }
-    .total-price { font-weight: bold; color: #111; font-size: 1.2rem; }
-    .toggle-btn { background: #eee; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2ec4b6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #20a396;
+    }
+    .switch-link {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+    .switch-link a {
+      color: #2ec4b6;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
     
-    /* Form Tersembunyi */
-    #formFields { display: none; margin-top: 15px; }
-    .input-group { margin-bottom: 12px; }
-    .input-group label { display: block; font-size: 0.75rem; color: #666; margin-bottom: 4px; font-weight: bold; }
-    .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; font-size: 0.9rem; background: #fcfcfc; }
+    /* Header Profil */
+    .user-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    .profile-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar-wrapper {
+      position: relative;
+      cursor: pointer;
+    }
+    .avatar-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #2ec4b6;
+    }
+    .logout-btn {
+      background: #ff5964;
+      padding: 6px 12px;
+      font-size: 12px;
+      width: auto;
+      margin: 0;
+    }
+    .logout-btn:hover {
+      background: #e0434e;
+    }
     
-    /* Ringkasan Pesanan */
-    .summary-box { background: #f8f9fa; border: 1px dashed #ddd; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 0.85rem; }
-    .summary-title { font-weight: bold; margin-bottom: 5px; color: #333; display: flex; justify-content: space-between; align-items: center; }
-    .summary-list { list-style: none; padding: 0; color: #555; }
-    .summary-list li { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    
-    /* Tombol Reset & Kirim */
-    .btn-group { display: flex; gap: 8px; }
-    .btn-reset { background-color: #dc3545; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; width: 35%; }
-    .btn-wa { background-color: #000; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 65%; font-size: 0.9rem; }
+    /* Visual Indikator Tabungan */
+    .jar-container {
+      position: relative;
+      width: 120px;
+      height: 200px;
+      border: 4px solid #333;
+      border-radius: 20px;
+      margin: 20px auto 15px;
+      background: #eef2f5;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+    .jar-container::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 6px;
+      background: #333;
+      border-radius: 4px 4px 0 0;
+    }
+    .jar-fill {
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(180deg, #2ec4b6, #0ff1ce);
+      transition: height 0.5s ease-in-out;
+    }
+    .percentage-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      font-weight: bold;
+      color: #333;
+      text-shadow: 0 0 5px rgba(255,255,255,0.8);
+    }
+
+    .stats {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .highlight {
+      font-weight: bold;
+      color: #2ec4b6;
+    }
+
+    /* Tabel Riwayat */
+    .history-section {
+      text-align: left;
+      margin-top: 25px;
+      border-top: 2px dashed #eee;
+      padding-top: 15px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .history-table th, .history-table td {
+      padding: 8px 6px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .history-table th {
+      background-color: #f8f9fa;
+      color: #666;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Tombol Kontak Bantuan WA -->
-  <a href="#" class="contact-btn" onclick="openContactWA()">💬 Tanya Kami</a>
-
-<header>
-  <img src="https://i.postimg.cc/75MGnRvk/1786492989752.png[/img][/url]" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover;">
-  <div>
-    Menu <br>
-    <div id="storeStatus" class="open">Toko Buka (Siap Kirim Pagi Ini)</div>
-
-    <div class="menu-note">📌 menu wadai dapat berganti setiap hari</div>
+  <!-- CARD 1: FORM LOGIN -->
+  <div class="card" id="loginCard">
+    <h2>Masuk</h2>
+    <div class="input-group">
+      <label for="loginUser">Username:</label>
+      <input type="text" id="loginUser" placeholder="Masukkan username">
+    </div>
+    <div class="input-group">
+      <label for="loginPass">Password:</label>
+      <div class="password-wrapper">
+        <input type="password" id="loginPass" placeholder="Masukkan password">
+        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPass', this)" title="Tampilkan/Sembunyikan Password">👁️</button>
+      </div>
+    </div>
+    <button onclick="handleLogin()">Masuk</button>
+    <div class="switch-link">
+      Belum punya akun? <a onclick="showScreen('registerCard')">Buat Akun</a>
+    </div>
   </div>
-</header>
-<!-- Input Pencarian -->
-<div style="padding: 10px 15px;">
-  <input type="text" id="searchInput" placeholder="Cari menu..." onkeyup="filterProducts()" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem;">
-</div>
 
-<div class="product-grid" id="productGrid"></div>
-
-  <div class="checkout-bar" id="checkoutBar">
-    <div class="checkout-header">
-      <div>Total: <span class="total-price" id="totalPrice">Rp 0</span></div>
-      <button class="toggle-btn" id="toggleBtn" onclick="toggleForm()">^</button>
+  <!-- CARD 2: FORM REGISTRASI -->
+  <div class="card hidden" id="registerCard">
+    <h2>Buat Akun Baru</h2>
+    <div class="input-group">
+      <label for="regUser">Username Baru:</label>
+      <input type="text" id="regUser" placeholder="Pilih username">
     </div>
+    <div class="input-group">
+      <label for="regPass">Password:</label>
+      <div class="password-wrapper">
+        <input type="password" id="regPass" placeholder="Pilih password">
+        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPass', this)" title="Tampilkan/Sembunyikan Password">👁️</button>
+      </div>
+    </div>
+    <button onclick="handleRegister()">Daftar</button>
+    <div class="switch-link">
+      Sudah punya akun? <a onclick="showScreen('loginCard')">Masuk</a>
+    </div>
+  </div>
+
+  <!-- CARD 3: APLIKASI TABUNGAN -->
+  <div class="card hidden" id="appCard">
     
-    <div id="formFields">
-      <!-- Ringkasan Pesanan -->
-      <div class="summary-box">
-        <div class="summary-title">Ringkasan Pesanan</div>
-        <ul class="summary-list" id="summaryList">
-          <li style="font-style: italic; color: #888;">Belum ada item dipilih</li>
-        </ul>
+    <!-- Profil Header -->
+    <div class="user-header">
+      <div class="profile-section">
+        <div class="avatar-wrapper" onclick="document.getElementById('profileInput').click()" title="Klik untuk ganti foto profil">
+          <img src="https://via.placeholder.com/50" id="profileImg" class="avatar-img" alt="Profil">
+          <input type="file" id="profileInput" accept="image/*" style="display:none;" onchange="uploadProfilePic(event)">
+        </div>
+        <div style="text-align: left;">
+          <div id="welcomeMsg" style="font-weight: bold; color: #333;">Halo!</div>
+          <span style="font-size: 11px; color: #888;">Klik foto untuk ganti</span>
+        </div>
       </div>
-
-      <div class="input-group">
-        <input type="text" id="customerName" placeholder="Nama Pemesan">
-      </div>
-      <div class="input-group">
-        <input type="tel" id="customerPhone" placeholder="No. WhatsApp / HP">
-      </div>
-
-      <div class="input-group">
-        <select id="orderType" onchange="toggleAddress()">
-          <option value="Delivery (Kirim ke Alamat)">Delivery</option>
-          <option value="Takeaway (Bawa Pulang)">Takeaway</option>
-        </select>
-      </div>
-      <div class="input-group" id="addressContainer">
-        <input type="text" id="address" placeholder="Alamat Pengiriman">
-      </div>
-      <div class="input-group">
-        <select id="paymentMethod">
-          <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat)</option>
-          <option value="Transfer Bank">Transfer Bank</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <textarea id="notes" placeholder="Catatan Tambahan (Opsional)" style="height: 45px;"></textarea>
-      </div>
-l
-      <!-- Tombol Reset & Pesan -->
-      <div class="btn-group">
-        <button class="btn-reset" id="resetBtn" onclick="resetCart()">Reset</button>
-        <button class="btn-wa" id="orderBtn" onclick="sendToWA()">Pesan Sekarang</button>
-      </div>
-      <button type="button" onclick="showHistory()" style="width: 100%; padding: 10px; background: #6c757d; color: white; border: none; border-radius: 8px; margin-top: 10px; font-weight: bold; cursor: pointer;">
-  📜 Lihat Riwayat Pesanan
-</button>
-
+      <button class="logout-btn" onclick="handleLogout()">Keluar</button>
     </div>
+
+    <h2>Tracker Tabungan</h2>
+    
+    <div class="input-group">
+      <label for="target">Target Tabungan (Rp):</label>
+      <input type="number" id="target" value="10000000">
+    </div>
+
+    <div class="input-group">
+      <label for="current">Total Saldo Terkumpul (Rp):</label>
+      <input type="number" id="current" value="1000000">
+    </div>
+
+    <div class="input-group">
+      <label for="daily">Rencana Setoran Per Hari (Rp):</label>
+      <input type="number" id="daily" value="50000">
+    </div>
+
+    <button onclick="saveAndCalculate()">Simpan & Update Visual</button>
+
+    <!-- Visual Indikator -->
+    <div class="jar-container">
+      <div class="jar-fill" id="jarFill"></div>
+      <div class="percentage-text" id="percentText">0%</div>
+    </div>
+
+    <div class="stats" id="statsOutput"></div>
+
+    <!-- Section Riwayat Tabungan -->
+    <div class="history-section">
+      <h3>Riwayat Setoran</h3>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Setoran</th>
+            <th>Total Saldo</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- Riwayat akan dirender di sini -->
+        </tbody>
+      </table>
+    </div>
+
   </div>
 
   <script>
-    const NO_WA = "6282199443463"; // Ganti dengan nomor WhatsApp Toko
-    let isPO = false;
+    let activeUser = null;
 
-    // Daftar Produk dengan Direct Link Gambar
-    const products = [
-      { id: 1, name: "Nasi Kuning Ayam", price: 15000, status: "ready", image: "https://i.postimg.cc/rpLDfqfH/nasikuningayam.jpg" },
-      { id: 2, name: "Nasi Kuning Telur", price: 15000, status: "ready", image: "https://i.postimg.cc/xjWNXGLx/nasikuningtelur.jpg" },
-      { id: 3, name: "Nasi Kuning Patin", price: 15000, status: "empty", image: "https://i.postimg.cc/Sxn6BQ7y/nasikuningpatin.jpg" },
-      { id: 4, name: "Wadai Untuk (Isi Kelapa)", price: 3000, status: "ready", image: "https://i.postimg.cc/Fz1zYzKN/wadaiuntukkelapa.jpg" },
-      { id: 5, name: "Wadai Untuk (Isi Kacang)", price: 3000, status: "empty", image: "https://i.postimg.cc/WzK3gVDK/wadaiuntukkacang.jpg" },
-      { id: 6, name: "Wadai Donat Pelangi", price: 3000, status: "ready", image: "https://i.postimg.cc/d1Vtf3rB/wadaidonatpelangi.jpg" },
-      { id: 7, name: "Wadai Donat Gula", price: 3000, status: "ready", image: "https://i.postimg.cc/FKZHG3dR/wadaidonatgula.jpg" },
-      { id: 8, name: "Wadai Donat Coklat", price: 3000, status: "ready", image: "https://i.postimg.cc/WbFtjdKn/wadaidonatcoklat.jpg" },
-      { id: 9, name: "Wadai Bingka Hijau", price: 3000, status: "ready", image: "https://i.postimg.cc/jq9d8s56/wadaibingkahijau.jpg" },
-      { id: 10, name: "Wadai Bingka Pisang", price: 3000, status: "empty", image: "https://i.postimg.cc/V6ZLPwFd/wadaibingkapisang.jpg" },
-      { id: 11, name: "Wadai Jawau", price: 3000, status: "empty", image: "https://i.postimg.cc/5254NLmv/wadaijawau.jpg" },
-      { id: 12, name: "Wadai Gagatas", price: 3000, status: "ready", image: "https://i.postimg.cc/tg29Fbw5/wadaigagatas.jpg" },
-      { id: 13, name: "Wadai Apam", price: 3000, status: "empty", image: "https://i.postimg.cc/L5ZRd1Xt/17bc7ec38b0f9a78352d366b1b0ca2e1.jpg" }
-
-    ];
-
-    const cart = {}; 
-    products.forEach(p => cart[p.id] = 0);
-
-    function toggleForm() {
-      const form = document.getElementById('formFields');
-      const btn = document.getElementById('toggleBtn');
-      if (form.style.display === 'block') {
-        form.style.display = 'none';
-        btn.innerText = "^";
+    // Fungsi Toggle Intip Password
+    function togglePasswordVisibility(inputId, button) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        button.innerText = '🙈'; // Ubah ikon ke mata tertutup
       } else {
-        form.style.display = 'block';
-        btn.innerText = "v";
+        input.type = 'password';
+        button.innerText = '👁️'; // Ubah ikon ke mata terbuka
       }
     }
 
-    function openContactWA() {
-      const msg = encodeURIComponent("Halo, saya mau nanya tentang menu/pesanan");
-      window.open(`https://wa.me/${NO_WA}?text=${msg}`, '_blank');
+    function showScreen(screenId) {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('registerCard').classList.add('hidden');
+      document.getElementById('appCard').classList.add('hidden');
+      document.getElementById(screenId).classList.remove('hidden');
     }
 
-    function checkStoreStatus() {
-      const now = new Date();
-      const currentTime = now.getHours() + (now.getMinutes() / 60);
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('savings_users') || '{}');
+    }
+
+    function handleRegister() {
+      const user = document.getElementById('regUser').value.trim();
+      const pass = document.getElementById('regPass').value.trim();
+
+      if (!user || !pass) {
+        alert('Username dan Password tidak boleh kosong!');
+        return;
+      }
+
+      const users = getUsers();
+      if (users[user]) {
+        alert('Username sudah terpakai!');
+        return;
+      }
+
+      users[user] = {
+        password: pass,
+        profilePic: 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user) + '&background=2ec4b6&color=fff',
+        savingsData: { target: 10000000, current: 1000000, daily: 50000 },
+        history: []
+      };
       
-      const statusDiv = document.getElementById('storeStatus');
-      const orderBtn = document.getElementById('orderBtn');
+      localStorage.setItem('savings_users', JSON.stringify(users));
+      alert('Akun berhasil dibuat! Silakan login.');
+      showScreen('loginCard');
+    }
 
-      const isTimeOpen = currentTime >= 4 && currentTime < 7.5;
+    function handleLogin() {
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      const users = getUsers();
 
-      if (isTimeOpen) {
-        isPO = false;
-        statusDiv.innerText = "Toko Buka (Siap Kirim Pagi Ini)"; 
-        statusDiv.className = "open";
-        orderBtn.innerText = "Pesan Sekarang";
+      if (users[user] && users[user].password === pass) {
+        activeUser = user;
+        localStorage.setItem('active_session', user);
+        loadUserData();
+        showScreen('appCard');
       } else {
-        isPO = true;
-        statusDiv.innerText = "Pre-Order (Buka untuk Besok)"; 
-        statusDiv.className = "po-mode";
-        orderBtn.innerText = "Kirim Pesanan PO";
+        alert('Username atau Password salah!');
       }
     }
 
-    function toggleAddress() { 
-      document.getElementById('addressContainer').style.display = document.getElementById('orderType').value.includes("Delivery") ? 'block' : 'none'; 
+    function handleLogout() {
+      activeUser = null;
+      localStorage.removeItem('active_session');
+      showScreen('loginCard');
     }
 
-    function updateQty(id, delta) { 
-      if (cart[id] + delta >= 0) { 
-        cart[id] += delta; 
-        document.getElementById(`qty-${id}`).innerText = cart[id]; 
-        calculateTotal(); 
-        updateSummary();
-      } 
-    }
+    // Upload Foto Profil
+    function uploadProfilePic(event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    function calculateTotal() { 
-      let total = 0; 
-      let totalWadaiQty = 0;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        document.getElementById('profileImg').src = base64Image;
 
-      products.forEach(p => {
-        if (p.price === 3000) {
-          totalWadaiQty += cart[p.id];
-        } else {
-          total += cart[p.id] * p.price;
+        const users = getUsers();
+        if (users[activeUser]) {
+          users[activeUser].profilePic = base64Image;
+          localStorage.setItem('savings_users', JSON.stringify(users));
         }
-      }); 
+      };
+      reader.readAsDataURL(file);
+    }
 
-      if (totalWadaiQty > 0) {
-        total += Math.floor(totalWadaiQty / 2) * 5000 + (totalWadaiQty % 2) * 3000;
+    function loadUserData() {
+      const users = getUsers();
+      const userData = users[activeUser];
+
+      document.getElementById('welcomeMsg').innerText = activeUser;
+      document.getElementById('profileImg').src = userData.profilePic || ('https://ui-avatars.com/api/?name=' + encodeURIComponent(activeUser));
+
+      if (userData.savingsData) {
+        document.getElementById('target').value = userData.savingsData.target;
+        document.getElementById('current').value = userData.savingsData.current;
+        document.getElementById('daily').value = userData.savingsData.daily;
       }
 
-      document.getElementById('totalPrice').innerText = 'Rp ' + total.toLocaleString(); 
+      renderHistory(userData.history || []);
+      updateSavings(false);
     }
 
-    function updateSummary() {
-      const summaryList = document.getElementById('summaryList');
-      let itemsHTML = '';
-      let hasItems = false;
+    function saveAndCalculate() {
+      const target = parseFloat(document.getElementById('target').value) || 0;
+      const current = parseFloat(document.getElementById('current').value) || 0;
+      const daily = parseFloat(document.getElementById('daily').value) || 0;
 
-      products.forEach(p => {
-        if (cart[p.id] > 0) {
-          hasItems = true;
-          itemsHTML += `<li><span>${p.name} (x${cart[p.id]})</span></li>`;
-        }
-      });
+      const users = getUsers();
+      const currentUserData = users[activeUser];
+      const oldCurrent = currentUserData.savingsData ? currentUserData.savingsData.current : 0;
 
-      if (hasItems) {
-        summaryList.innerHTML = itemsHTML;
-      } else {
-        summaryList.innerHTML = '<li style="font-style: italic; color: #888;">Belum ada item dipilih</li>';
+      if (current > oldCurrent) {
+        const setoranNominal = current - oldCurrent;
+        const now = new Date();
+        const timeString = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        if (!currentUserData.history) currentUserData.history = [];
+        
+        currentUserData.history.unshift({
+          waktu: timeString,
+          setoran: setoranNominal,
+          total: current
+        });
       }
+
+      currentUserData.savingsData = { target, current, daily };
+      localStorage.setItem('savings_users', JSON.stringify(users));
+
+      renderHistory(currentUserData.history || []);
+      updateSavings(true);
     }
 
-    function resetCart() {
-      products.forEach(p => {
-        cart[p.id] = 0;
-        const qtyElement = document.getElementById(`qty-${p.id}`);
-        if (qtyElement) qtyElement.innerText = "0";
-      });
-      calculateTotal();
-      updateSummary();
-    }
+    function renderHistory(historyList) {
+      const historyBody = document.getElementById('historyBody');
+      historyBody.innerHTML = '';
 
-    function renderProducts() {
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = products.map(p => {
-        const isReady = p.status === "ready";
-        return `
-          <div class="product-card" style="${!isReady ? 'opacity:0.55;' : ''}">
-            <img src="${p.image}" alt="${p.name}" style="width:100%; aspect-ratio:1/1; object-fit:cover; display:block;">
-            <div class="product-info">
-              <div class="product-title">
-                ${p.name} ${!isReady ? '<br><span style="color:#d9534f; font-size:0.7rem; font-weight:bold;">(Libur / Habis)</span>' : ''}
-              </div>
-              <div class="product-price">Rp ${p.price.toLocaleString()}</div>
-              <div class="quantity-control">
-                <button class="qty-btn" onclick="updateQty(${p.id}, -1)" ${!isReady ? 'disabled' : ''}>-</button>
-                <span class="qty-number" id="qty-${p.id}">${cart[p.id]}</span>
-                <button class="qty-btn" onclick="updateQty(${p.id}, 1)" ${!isReady ? 'disabled' : ''}>+</button>
-              </div>
-            </div>
-          </div>
+      if (historyList.length === 0) {
+        historyBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">Belum ada riwayat setoran</td></tr>`;
+        return;
+      }
+
+      historyList.forEach(item => {
+        const row = `
+          <tr>
+            <td>${item.waktu}</td>
+            <td style="color:green; font-weight:bold;">+${formatRupiah(item.setoran)}</td>
+            <td>${formatRupiah(item.total)}</td>
+          </tr>
         `;
-      }).join('');
-    }
-
-    function sendToWA() {
-      const name = document.getElementById('customerName').value;
-      const phone = document.getElementById('customerPhone').value;
-      const type = document.getElementById('orderType').value;
-      const address = document.getElementById('address').value;
-      const payment = document.getElementById('paymentMethod').value;
-      const notes = document.getElementById('notes').value;
-
-      if (!name) { alert("Tolong isi Nama Pemesan!"); return; }
-      if (!phone) { alert("Tolong isi Nomor WA/HP Pemesan!"); return; }
-      if (type.includes("Delivery") && !address) { alert("Tolong isi Alamat Pengiriman!"); return; }
-      
-      let orderList = [];
-      let summaryText = "";
-      let totalWadaiQty = 0;
-      let total = 0;
-
-      products.forEach(p => {
-        if (cart[p.id] > 0) {
-          orderList.push(`- ${p.name} (${cart[p.id]}x)`);
-          summaryText += `• ${p.name} (${cart[p.id]}x)\n`;
-          if (p.price === 3000) {
-            totalWadaiQty += cart[p.id];
-          } else {
-            total += cart[p.id] * p.price;
-          }
-        }
+        historyBody.innerHTML += row;
       });
-
-      if (orderList.length === 0) { alert("Pilih menu dulu!"); return; }
-
-      if (totalWadaiQty > 0) {
-        total += Math.floor(totalWadaiQty / 2) * 5000 + (totalWadaiQty % 2) * 3000;
-      }
-
-      const confirmMsg = `Apakah pesanan Anda sudah benar?\n\n` +
-                         `Rincian Pesanan:\n${summaryText}\n` +
-                         `Total Bayar: Rp ${total.toLocaleString()}\n\n` +
-                         `Klik OK untuk melanjutkan ke WhatsApp.`;
-
-      const isConfirmed = confirm(confirmMsg);
-
-      if (!isConfirmed) {
-        return; 
-      }
-
-      if (orderList.length === 0) {
-    alert("Waduh, pilih menunya dulu dong!");
-    return;
-  }
-
-  if (!name || !phone) {
-    alert("Nama dan No. HP wajib diisi ya!");
-    return;
-  }
-
-  if (type.includes("Delivery") && !address) {
-    alert("Alamat harus diisi untuk pengiriman!");
-    return;
-  }
-
-  let headerText = isPO ? "*[PESANAN PRE-ORDER (PO)]*\n\n" : "*[PESANAN LANGSUNG]*\n\n";
-
-  let message = `${headerText}Halo, saya ingin memesan:\n\n*Nama:* ${name}\n*No. HP:* ${phone}\n*Tipe:* ${type}\n*Pembayaran:* ${payment}\n`;
-  if(type.includes("Delivery")) message += `*Alamat:* ${address}\n`;
-  if (notes) message += `*Catatan:* ${notes}\n`;
-
-    message += `\n*Menu:*\n${orderList.join('\n')}\n\n*Total Bayar:* Rp ${total.toLocaleString()}\n\nMohon diproses ya, terima kasih!`;
-
-  // --- KODE SIMPAN RIWAYAT ---
-  const transaction = {
-    date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    items: orderList,
-    total: total
-  };
-
-  let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
-  history.unshift(transaction);
-  localStorage.setItem('orderHistory', JSON.stringify(history));
-  // ---------------------------
-
-  window.open(`https://wa.me/6282199443463?text=${encodeURIComponent(message)}`, '_blank');
-}
-
-    renderProducts(); 
-    toggleAddress(); 
-    checkStoreStatus();
-    function filterProducts() {
-  const keyword = document.getElementById('searchInput').value.toLowerCase();
-  const productCards = document.querySelectorAll('#productGrid > div');
-
-  productCards.forEach(card => {
-    const text = card.textContent.toLowerCase();
-    if (text.includes(keyword)) {
-      card.style.display = "";
-    } else {
-      card.style.display = "none";
     }
-  });
-}
-function showHistory() {
-  let history = JSON.parse(localStorage.getItem('orderHistory')) || [];
-  
-  if (history.length === 0) {
-    alert("Belum ada riwayat pesanan.");
-    return;
-  }
 
-  let textHistory = "=== RIWAYAT PESANAN ANDA ===\n\n";
-  history.forEach((tx, index) => {
-    textHistory += `${index + 1}. [${tx.date}]\n`;
-    textHistory += `   Menu: ${tx.items.join(', ')}\n`;
-    textHistory += `   Total: Rp ${tx.total.toLocaleString('id-ID')}\n`;
-    textHistory += "-----------------------------------\n";
-  });
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+    }
 
-  alert(textHistory);
-}
+    function updateSavings(showAlert = false) {
+      const target = parseFloat(document.getElementById('target').value) || 0;
+      const current = parseFloat(document.getElementById('current').value) || 0;
+      const daily = parseFloat(document.getElementById('daily').value) || 0;
 
+      if (target <= 0) {
+        if (showAlert) alert("Target tabungan harus lebih dari 0!");
+        return;
+      }
+
+      let percentage = (current / target) * 100;
+      let displayPercentage = percentage.toFixed(1);
+      if (percentage > 100) percentage = 100;
+
+      document.getElementById('jarFill').style.height = percentage + '%';
+      document.getElementById('percentText').innerText = displayPercentage + '%';
+
+      const remaining = target - current;
+      const statsOutput = document.getElementById('statsOutput');
+
+      if (remaining <= 0) {
+        statsOutput.innerHTML = `<span style="color: green; font-weight: bold;">Selamat! Target tabungan kamu sudah tercapai! 🎉</span>`;
+      } else if (daily > 0) {
+        const daysLeft = Math.ceil(remaining / daily);
+        statsOutput.innerHTML = `
+          Sisa target: <span class="highlight">${formatRupiah(remaining)}</span><br>
+          Estimasi tercapai: <span class="highlight">${daysLeft} hari lagi</span> (± ${(daysLeft / 30).toFixed(1)} bulan).
+        `;
+      } else {
+        statsOutput.innerHTML = `Sisa target: <span class="highlight">${formatRupiah(remaining)}</span>.`;
+      }
+    }
+
+    window.onload = function() {
+      const savedSession = localStorage.getItem('active_session');
+      if (savedSession && getUsers()[savedSession]) {
+        activeUser = savedSession;
+        loadUserData();
+        showScreen('appCard');
+      } else {
+        showScreen('loginCard');
+      }
+    };
   </script>
+
 </body>
 </html>
